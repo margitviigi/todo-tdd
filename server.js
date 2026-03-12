@@ -1,4 +1,3 @@
-// 1. Load environment variables first!
 require('dotenv').config(); 
 
 const app = require('./app');
