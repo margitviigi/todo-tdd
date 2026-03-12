@@ -1,0 +1,14 @@
+[
+   {
+    "title": "Buy groceries", 
+   "done": false
+    },
+   {
+    "title": "Clean the house", 
+    "done": true
+    },
+   {
+    "title": "Finish project", 
+    "done": false
+    }
+]
