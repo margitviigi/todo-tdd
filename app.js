@@ -1,10 +1,14 @@
 const express = require('express');
+const todoRoutes = require('./routes/todo.routes');
 const app = express();
 
+// Middleware
+app.use(express.json());
+
+// Routes
+app.use("/todos", todoRoutes);
 app.get('/', (req, res) => {
     res.send('express test');
-    });
+});
 
-app.listen(3015, () => {
-    console.log('Server is running on port 3015');
-    }   );
+module.exports = app;
