@@ -67,6 +67,16 @@ describe(endpointUrl, () => {
         .send(testData);
         expect(response.statusCode).toBe(404);
     });
+    it  ("DELETE " + endpointUrl, async () => {
+        const response = await request(app)
+            .delete(endpointUrl + newTodoId);
+        expect(response.statusCode).toBe(200);
+    });
+    it("should return 404 on DELETE " + endpointUrl, async () => {
+        const response = await request(app)
+            .delete(endpointUrl + nonExistingTodoId);
+        expect(response.statusCode).toBe(404);
+    });
     afterAll(async () => {
         await mongodb.disconnect();
     });
