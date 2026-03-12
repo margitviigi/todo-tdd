@@ -6,7 +6,12 @@ require ('dotenv').config();
 
 const endpointUrl = '/todos/';
 
-let firstTodo
+let firstTodo, newTodoId
+const testData = {
+    title: "test todo update",
+    done: true
+} 
+const nonExistingTodoId = "62c8cbbfdd1b22c0015d9eac";
 
 describe(endpointUrl, () => {
     beforeAll(async () => {
@@ -19,6 +24,7 @@ describe(endpointUrl, () => {
         expect(response.statusCode).toBe(201);
         expect(response.body.title).toBe(newTodo.title);
         expect(response.body.done).toBe(newTodo.done);
+        newTodoId = response.body._id;
     });
     it("should return error 500 on malformed data with POST" + endpointUrl, async () => {
         const response = await request(app)
@@ -45,6 +51,20 @@ describe(endpointUrl, () => {
     });
     it("GET todoId that does not exist " + endpointUrl + ":todoId", async () => {
         const response = await request(app).get(endpointUrl + "62c8cbbfdd1b22c0015d9eac");
+        expect(response.statusCode).toBe(404);
+    });
+    it("PUT " + endpointUrl, async () => {
+        const response = await request(app)
+            .put(endpointUrl + newTodoId)
+            .send(testData);
+        expect(response.statusCode).toBe(200);
+        expect(response.body.title).toBe(testData.title);
+        expect(response.body.done).toBe(testData.done);
+    });
+    it("should return 404 on PUT" + endpointUrl, async () => {
+        const response = await request(app)
+        .put(endpointUrl + nonExistingTodoId)
+        .send(testData);
         expect(response.statusCode).toBe(404);
     });
     afterAll(async () => {
