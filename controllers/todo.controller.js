@@ -18,7 +18,21 @@ const getTodos = async (req, res, next) => {
     }
 };
 
+const getTodoById = async (req, res, next) => {
+    try {
+        const todo = await TodoModel.findById(req.params.todoId);
+        if (todo) {
+            res.status(200).json(todo);
+        } else {
+            res.status(404).send();
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createTodo, 
-    getTodos
+    getTodos,
+    getTodoById
 }

@@ -4,8 +4,11 @@ const httpMocks = require('node-mocks-http');
 const newTodo = require('../mock-data/new-todo.json');
 const allTodos = require('../mock-data/all-todos.json');
 
+
+
 TodoModel.create = jest.fn();
 TodoModel.find = jest.fn();
+TodoModel.findById = jest.fn();
 
 let req, res, next;
 
@@ -13,7 +16,7 @@ beforeEach(() => {
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
     next = jest.fn();
-});
+}, 15000);
 
 describe('TodoController.createTodo', () => {
     beforeEach(() => {
@@ -64,4 +67,33 @@ describe('TodoController.getTodos', () => {
         await TodoController.getTodos(req, res, next);
         expect(next).toHaveBeenCalledWith(errorMessage);
     });
+});
+describe('TodoController.getTodoById', () => {
+    it('should have a getTodoById function', () => {
+        expect(typeof TodoController.getTodoById).toBe('function');
+    });
+    it('should call TodoModel.findById with route parameter', async () => {
+        req.params.todoId = "69b27ed180afc5edbac0c45a";
+        await TodoController.getTodoById(req, res, next);
+        expect(TodoModel.findById).toHaveBeenCalledWith("69b27ed180afc5edbac0c45a");
+    });
+        it('should return json body and status 200 if todo found', async () => {
+        await TodoModel.findById.mockReturnValue(newTodo);
+        await TodoController.getTodoById(req, res, next);
+        expect(res.statusCode).toBe(200);
+        expect(res._getJSONData()).toStrictEqual(newTodo);
+    });
+    it('should do error handling', async () => {
+        const errorMessage = { message: "Error finding todoModel" };
+        TodoModel.findById.mockRejectedValue(errorMessage);
+        await TodoController.getTodoById(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
+    });
+    it('should return 404 when item not found', async () => {
+        await TodoModel.findById.mockReturnValue(null);
+        await TodoController.getTodoById(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled()).toBeTruthy();
+    })  
+    
 });

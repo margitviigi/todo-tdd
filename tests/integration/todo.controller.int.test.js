@@ -6,10 +6,12 @@ require ('dotenv').config();
 
 const endpointUrl = '/todos/';
 
+let firstTodo
+
 describe(endpointUrl, () => {
     beforeAll(async () => {
         await mongodb.connect();
-    });
+    }, 15000);
     it("POST " + endpointUrl, async () => {
         const response = await request(app)
             .post(endpointUrl)
@@ -33,6 +35,17 @@ describe(endpointUrl, () => {
         expect(Array.isArray(response.body)).toBeTruthy();
         expect (response.body[0].title).toBeDefined();
         expect (response.body[0].done).toBeDefined();
+        firstTodo = response.body[0];
+    });
+    it("GET by Id " + endpointUrl + ":todoId", async () => {
+        const response = await request(app).get(endpointUrl + firstTodo._id);
+        expect(response.statusCode).toBe(200);
+        expect(response.body.title).toBe(firstTodo.title);
+        expect(response.body.done).toBe(firstTodo.done);
+    });
+    it("GET todoId that does not exist " + endpointUrl + ":todoId", async () => {
+        const response = await request(app).get(endpointUrl + "62c8cbbfdd1b22c0015d9eac");
+        expect(response.statusCode).toBe(404);
     });
     afterAll(async () => {
         await mongodb.disconnect();

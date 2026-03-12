@@ -4,7 +4,9 @@ const app = express();
 
 app.use(express.json());
 
+
 app.use("/todos", todoRoutes);
+app.use("/todos/:todoId", todoRoutes);
 
 app.use((error, req, res, next) => {
     res.status(500).json({
